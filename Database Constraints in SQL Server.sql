@@ -131,3 +131,52 @@ INSERT INTO Products (ProductName, Price) VALUES
 ('Tablet', 450.00);
 
 Select * from Products;
+
+
+-------------------------------------------------------------------------
+--Things to Remember in Constraints in SQL
+-------------------------------------------------------------------------
+--1. Use PRIMARY KEY to Uniquely Identify Each Row
+--A PRIMARY KEY constraint ensures each row is unique and not NULL.
+
+--2. FOREIGN KEY Enforces Referential Integrity
+--A FOREIGN KEY ensures only valid references exist between related tables.
+CREATE TABLE Employees (
+    EmployeeID INT PRIMARY KEY,
+    Name VARCHAR(100),
+    DepartmentID INT,
+    FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID)
+);
+
+--Tip: Use ON DELETE CASCADE to automatically remove dependent records:
+FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID) ON DELETE CASCADE;
+
+-- 3. UNIQUE Constraint Ensures No Duplicate Values
+--Use UNIQUE to enforce distinct values in a column.
+
+
+--4. CHECK Constraint Validates Data Before Insertion
+--The CHECK constraint ensures values meet specific conditions.
+
+
+--5. Use NOT NULL to Prevent Missing Data
+--The NOT NULL constraint ensures important fields are never left empty.
+
+--6. DEFAULT Assigns a Value When None is Provided
+--The DEFAULT constraint provides a fallback value when no value is inserted.
+CREATE TABLE Employees (
+    EmployeeID INT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Status VARCHAR(20) DEFAULT 'Active' -- If no value is inserted, 'Active' is used
+);
+
+CREATE TABLE Products (
+    ProductID INT PRIMARY KEY,
+    ProductName VARCHAR(100) UNIQUE,
+    Stock INT DEFAULT 100 -- If stock is not specified, it's set to 100
+);
+
+--7. ALTER TABLE to Add or Remove Constraints Carefully
+--Constraints can be added or removed later, but doing so incorrectly can cause data loss or errors.
+ALTER TABLE Employees ADD CONSTRAINT chk_age CHECK (age > 18);
+ALTER TABLE Employees DROP CONSTRAINT chk_age;
