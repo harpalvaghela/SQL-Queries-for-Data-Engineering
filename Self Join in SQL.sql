@@ -89,3 +89,47 @@ FROM Student AS s1
 LEFT JOIN Student AS s2 
     ON s1.student_teacher = s2.student_teacher 
     AND s1.student_id <> s2.student_id;
+
+
+
+
+-----------------------------------------------------------------
+--Things to Remember in Self Joins in SQL
+-----------------------------------------------------------------
+--1. Always Use Table Aliases (e1, e2) for Readability
+--Since Self Join involves the same table twice, aliases are required to differentiate them.
+
+SELECT e1.emp_name AS Employee, e2.emp_name AS Manager
+FROM Employee e1
+LEFT JOIN Employee e2 ON e1.emp_manager_id = e2.emp_id;
+
+--e1 → Represents employees
+--e2 → Represents managers
+
+--2. Use LEFT JOIN to Include Employees Without a Manager
+--If an employee has no manager (NULL), an INNER JOIN excludes them from the result.
+
+SELECT e1.emp_name AS Employee, COALESCE(e2.emp_name, 'No Manager') AS Manager
+FROM Employee e1
+LEFT JOIN Employee e2 ON e1.emp_manager_id = e2.emp_id;
+
+--COALESCE() replaces NULL values with "No Manager"
+
+--3. Be Careful with INNER JOIN – It Excludes Unmatched Rows
+--INNER JOIN only returns employees who have managers.
+
+--4. Use Self Join to Find Related Data (e.g., Customers with Same Purchases)
+--A Self Join is useful when finding related records in the same table.
+SELECT e1.user_id AS User1, e2.user_id AS User2, e1.product
+FROM Ecommerce e1
+JOIN Ecommerce e2 ON e1.product = e2.product AND e1.user_id <> e2.user_id
+WHERE e1.user_id = 1;
+--Finds users who bought the same product as User 1 but are not User 1.
+
+
+--5. Use Self Join for Matching Students with the Same Teacher
+--Comparing students in the same class or with the same teacher.
+
+SELECT s1.student_name AS Student1, s2.student_name AS Student2, s1.student_teacher
+FROM Student s1
+JOIN Student s2 ON s1.student_teacher = s2.student_teacher AND s1.student_id <> s2.student_id;
