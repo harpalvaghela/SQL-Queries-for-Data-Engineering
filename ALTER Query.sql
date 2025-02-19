@@ -64,3 +64,33 @@ SELECT * from users;
 
 -- Dropping Constraints
 ALTER TABLE users DROP CONSTRAINT UQ_Users_Email;
+
+
+
+--------------------------------------------------------------------
+--Things to Remember in ALTER Query in SQL
+--------------------------------------------------------------------
+--1. Always Use ALTER TABLE with Caution, as Changes Affect Existing Data
+--Modifying a table can impact stored data and cause data loss if not handled properly.
+--Better Approach: Back up or rename the column before dropping
+EXEC sp_rename 'users.email', 'old_email', 'COLUMN';
+ALTER TABLE users ADD email VARCHAR(50); -- Keeps old data safe
+
+-- 2. ADD New Columns with NULL Default to Avoid Errors
+--If a new column is added without a default value, it will contain NULL.
+--Ensure existing rows are not affected by constraints.
+ALTER TABLE users ADD phone_number VARCHAR(15) NULL;
+
+-- 3. Use ALTER COLUMN to Modify Data Types Carefully
+--If reducing the column size, ensure no existing data is longer than the new limit.
+ALTER TABLE users ALTER COLUMN name VARCHAR(100); -- Expanding is safe
+
+--4. Always DROP COLUMN or DROP CONSTRAINT Only If Not Needed
+--Check dependencies before dropping a column or constraint.
+SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'age';
+ALTER TABLE users DROP COLUMN age; -- Safe to drop if no dependencies exist
+
+--5. When Adding a NOT NULL Constraint, Provide a Default Value
+--Adding NOT NULL without a default value will cause an error if existing rows contain NULL.
+UPDATE users SET email = 'unknown@example.com' WHERE email IS NULL;
+ALTER TABLE users ALTER COLUMN email VARCHAR(50) NOT NULL;
