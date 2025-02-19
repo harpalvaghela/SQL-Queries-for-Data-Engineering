@@ -33,7 +33,7 @@ SELECT employees.name, salaries.salary
 FROM employees
 INNER JOIN salaries ON employees.id = salaries.employee_id;
 
---Table Aliases (e and s) � Improves readability and performance, especially in complex queries with multiple joins.
+--Table Aliases (e and s) – Improves readability and performance, especially in complex queries with multiple joins.
 SELECT e.name, s.salary
 FROM employees AS e
 INNER JOIN salaries AS s ON e.id = s.employee_id;
@@ -192,3 +192,51 @@ FROM employees AS e
 INNER JOIN employees AS m ON e.manager_id = m.id;
 
 
+----------------------------------------------------------------------
+--Things to Remember in Joins in SQL
+----------------------------------------------------------------------
+ --1. Always Use ON Instead of USING for Joins in SQL Server
+
+SELECT employees.name, salaries.salary
+FROM employees 
+INNER JOIN salaries ON employees.id = salaries.employee_id;
+
+--2. Use INNER JOIN to Retrieve Only Matching Records
+--INNER JOIN returns only rows where there is a match in both tables.
+SELECT e.name, s.salary
+FROM employees AS e
+INNER JOIN salaries AS s ON e.id = s.employee_id;
+
+
+--3. Use LEFT JOIN to Keep All Records from One Table
+--LEFT JOIN returns all rows from the left table and matching rows from the right table.
+SELECT e.name, COALESCE(s.salary, 0) AS salary
+FROM employees AS e
+LEFT JOIN salaries AS s ON e.id = s.employee_id;
+
+--4. Be Careful with RIGHT JOIN (Use LEFT JOIN Instead for Readability)
+--RIGHT JOIN is rarely used because it can be rewritten as LEFT JOIN by swapping tables.
+SELECT o.id AS OrderID, c.name AS CustomerName
+FROM customers AS c
+LEFT JOIN orders AS o ON c.id = o.customer_id;
+--This is easier to read and maintain than using RIGHT JOIN.
+
+
+--5. Use FULL OUTER JOIN to Keep All Records from Both Tables
+--FULL OUTER JOIN combines LEFT JOIN and RIGHT JOIN, keeping unmatched records from both tables.
+SELECT c.name AS CustomerName, o.product, o.quantity
+FROM customers AS c
+FULL OUTER JOIN orders AS o ON c.id = o.customer_id;
+--Tip: Use COALESCE() to handle NULL values for missing data.
+
+--6. Use SELF JOIN for Hierarchical Data (e.g., Employee-Manager Relationship)
+--A self-join is when a table joins with itself, typically used for hierarchical relationships.
+--Example: Find Each Employee’s Manager
+
+SELECT e.name AS Employee, COALESCE(m.name, 'No Manager') AS Manager
+FROM employees AS e
+LEFT JOIN employees AS m ON e.manager_id = m.id;
+
+--7. Use Indexing for Faster Joins in Large Tables
+--Indexing on foreign keys speeds up joins significantly.
+CREATE INDEX idx_orders_customer_id ON orders(customer_id);
