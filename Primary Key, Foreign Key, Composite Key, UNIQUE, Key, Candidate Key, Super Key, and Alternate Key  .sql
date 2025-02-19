@@ -136,3 +136,79 @@ CREATE TABLE Employees (
 -- Email and SSN. Both are enforced with UNIQUE constraints to ensure their eligibility as alternate keys.
 -- Ensuring that no two employees can register with the same email or SSN.
 -- While SQL Server does not have specific syntax to designate a column as an "alternate key," using the UNIQUE constraint effectively creates alternate keys. This setup is essential for maintaining data integrity and providing flexible, efficient data access paths in a relational database
+
+
+
+---------------------------------------------------------
+--Things to Remember for Keys in SQL
+--------------------------------------------------------
+--1. PRIMARY KEY Must Be Unique and Cannot Be NULL
+--A PRIMARY KEY uniquely identifies each row in a table and cannot contain NULL values.
+--Wrong Query:
+CREATE TABLE employees (
+    id INT PRIMARY KEY NULL, -- ERROR: PRIMARY KEY cannot be NULL
+    name VARCHAR(50)
+);
+--Correct query:
+CREATE TABLE employees (
+    id INT PRIMARY KEY, -- Ensures uniqueness
+    name VARCHAR(50)
+);
+
+-- 2. FOREIGN KEY Must Reference a PRIMARY KEY in Another Table
+--A FOREIGN KEY creates a relationship between two tables.
+
+CREATE TABLE customers (
+    id INT PRIMARY KEY,
+    name VARCHAR(50)
+);
+
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+--3. Use COMPOSITE KEY When a Single Column Cannot Ensure Uniqueness
+--A COMPOSITE KEY is made of two or more columns to uniquely identify each row.
+CREATE TABLE order_details (
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    PRIMARY KEY (order_id, product_id) -- Composite Key
+);
+
+--4. UNIQUE Allows NULL Values, Unlike PRIMARY KEY
+--A UNIQUE constraint ensures all values in a column are distinct but can contain NULL values.
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    email VARCHAR(100) UNIQUE -- Can be NULL but must be unique if provided
+);
+
+--5. CANDIDATE KEY is a Potential PRIMARY KEY
+--A CANDIDATE KEY is a column or set of columns that can be chosen as a PRIMARY KEY.
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    email VARCHAR(100) UNIQUE
+);
+
+--6. SUPER KEY Includes PRIMARY KEY and Additional Columns
+--A SUPER KEY is a set of one or more columns that uniquely identify a row, including extra columns.
+-- Example:
+(id)
+(id, name)
+(id, email)
+(id, name, department)
+
+--Tip: The smallest SUPER KEY without redundancy is a CANDIDATE KEY.
+
+
+--7. ALTERNATE KEY is a CANDIDATE KEY That is Not a PRIMARY KEY
+--When a table has multiple candidate keys, one becomes the PRIMARY KEY, and the rest are alternate keys.
+
+CREATE TABLE employees (
+    id INT PRIMARY KEY,  -- Chosen as the PRIMARY KEY
+    email VARCHAR(100) UNIQUE -- ALTERNATE KEY (Candidate Key not chosen)
+);
+
+--Why? email could have been a PRIMARY KEY, but id was chosen instead.
